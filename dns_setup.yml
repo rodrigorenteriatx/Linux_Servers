@@ -1,0 +1,5 @@
+- name: Dns Setup (Bind)
+  hosts: dns_server
+  become: yes
+  roles:
+    - bind-config

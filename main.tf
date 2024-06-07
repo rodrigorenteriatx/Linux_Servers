@@ -126,6 +126,19 @@ resource "aws_security_group" "local_sg" {
 }
 
 # Instances
+# resource "aws_instance" "dns_server" {
+#   ami             = "ami-00beae93a2d981137" # Amazon Linux 2 AMI
+#   instance_type   = "t2.micro"
+#   subnet_id       = aws_subnet.main_server_subnet.id
+#   key_name        = aws_key_pair.dns_key.key_name
+#   vpc_security_group_ids = [ aws_security_group.dns_sg.id ]
+#   tags = {
+#     Name = "DNS Server"
+#   }
+#   associate_public_ip_address = true
+#   depends_on = [aws_security_group.dns_sg]
+# }
+
 resource "aws_instance" "dns_server" {
   ami             = "ami-00beae93a2d981137" # Amazon Linux 2 AMI
   instance_type   = "t2.micro"
@@ -137,7 +150,10 @@ resource "aws_instance" "dns_server" {
   }
   associate_public_ip_address = true
   depends_on = [aws_security_group.dns_sg]
+
 }
+
+
 
 resource "aws_instance" "local_windows_machine" {
   ami             = "ami-0069eac59d05ae12b" # Replace with the latest Windows Server AMI
@@ -151,4 +167,29 @@ resource "aws_instance" "local_windows_machine" {
   }
   get_password_data = true
   depends_on = [aws_security_group.local_sg]
+
+#   provisioner "file" {
+#     source      = resource.local_file.configure-dns.filename
+#     destination = "C:\\Windows\\Temp\\configure-dns.ps1"
+
+#     connection {
+#       type     = "winrm"
+#       user     = "Administrator"
+#       password = rsadecrypt(self.password_data, file("~/.ssh/dns_key"))
+#       host     = aws_instance.local_windows_machine.public_ip
+#     }
+#   }
+
+#   provisioner "remote-exec" {
+#     inline = [
+#       "powershell -ExecutionPolicy Unrestricted -File C:\\Windows\\Temp\\configure-dns.ps1"
+#     ]
+
+#     connection {
+#       type     = "winrm"
+#       user     = "Administrator"
+#       password = "${rsadecrypt(aws_instance.local_windows_machine.password_data, file("~/.ssh/dns_key"))}"
+#       host     = aws_instance.local_windows_machine.public_ip
+#     }
+#   }
 }

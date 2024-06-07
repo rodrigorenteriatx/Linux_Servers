@@ -1,0 +1,27 @@
+---
+# tasks file for bind-config
+
+- name: Install bind and bind utils
+  yum:
+    name:
+    - bind
+    - bind-utils
+    state: present
+
+- name: Copy named.conf
+  copy:
+    src: named.conf
+    dest: /etc/named.conf
+
+- name: Restart named service
+  service:
+    name: named
+    state: restarted
+
+- name: test dig
+  command: dig www.google.com
+  register: dig_output
+
+- name: debug dig output
+  debug:
+    var: dig_output.stdout_lines
