@@ -83,6 +83,13 @@ resource "aws_security_group" "dns_sg" {
     cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]  # Replace with your IP
   }
 
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [aws_subnet.client_subnet.cidr_block]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
