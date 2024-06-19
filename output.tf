@@ -18,6 +18,26 @@ resource "local_file" "hosts_ini" {
     EOF
 
 }
+resource "local_file" "ansible.cfg" {
+  filename = "ansible.cfg"
+  content =  <<EOF
+  [defaults]
+  inventory = ${local_file.hosts_ini.filename}
+  remote_user = ec2-user
+  host_key_checking = False
+  retry_files_enabled = False
+  command_warnings = False
+  roles_path = ./roles
+  private_key_file= ~/.ssh/dns_key
+
+  [privilege_escalation]
+  become = True
+  become_method = sudo
+  become_user = root
+  become_ask_pass = False
+  EOF
+
+}
 
 # output "decrytpted_password" {
 #     value = rsadecrypt(aws_instance.local_windows_machine.password_data, file("~/.ssh/dns_key"))
